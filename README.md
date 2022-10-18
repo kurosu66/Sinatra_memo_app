@@ -3,7 +3,7 @@ Sinatraで作成したメモアプリ。
 
 # インストール 
 ```
-git clone git@github.com:kurosu66/sinatra_memo_app.git
+git clone -b develop git@github.com:kurosu66/sinatra_memo_app.git
 cd sinatra_memo_app
 bundle install
 bundle exec ruby app.rb
