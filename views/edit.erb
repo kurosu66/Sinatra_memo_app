@@ -3,7 +3,7 @@
 <div class="content">
   <form method="post" action="/memos/<%= @memo_id %>/update">
     <p><label>タイトル</label></p>
-    <input required type="text" name="title" autocomplete="none" value="<%= @memo_title %>">
+    <input required type="text" name="title" autocomplete="none" value="<%= sanitize @memo_title %>">
 
     <p><label>内容</label></p>
     <textarea required name="content" row="40" cols="100"><%= @memo_content %></textarea>

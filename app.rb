@@ -3,6 +3,7 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
+require 'securerandom'
 
 helpers do
   def sanitize(text)
@@ -24,10 +25,10 @@ get '/new' do
 end
 
 post '/memos' do
-  next_memo_id = 1
+  next_memo_id = 0
   unless memos.nil?
     memos['memos'].each do |memo|
-      next_memo_id = memo.keys[0].to_i + 1
+      next_memo_id = SecureRandom.uuid
     end
   end
 
@@ -40,7 +41,7 @@ post '/memos' do
 end
 
 get '/memos/:id' do
-  @memo_id = params[:id].to_i
+  @memo_id = params[:id]
   memos['memos'].each do |memo|
     if memo[@memo_id.to_s]
       @memo_title = memo[@memo_id.to_s]['title']
@@ -52,9 +53,9 @@ get '/memos/:id' do
 end
 
 get '/memos/:id/edit' do
-  @memo_id = params[:id].to_i
+  @memo_id = params[:id]
   memos['memos'].each do |memo|
-    if memo[@memo_id.to_s]
+    if memo[@memo_id]
       @memo_title = memo[@memo_id.to_s]['title']
       @memo_content = memo[@memo_id.to_s]['content']
     end
@@ -64,7 +65,7 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id/update' do
-  @memo_id = params[:id].to_i
+  @memo_id = params[:id]
   File.open('memos.json', 'w') do |file|
     memos['memos'].each do |memo|
       if memo[@memo_id.to_s]
@@ -79,7 +80,7 @@ patch '/memos/:id/update' do
 end
 
 delete '/memos/:id' do
-  @memo_id = params[:id].to_i
+  @memo_id = params[:id]
   memos['memos'].delete_if do |memo|
     memo[@memo_id.to_s]
   end
