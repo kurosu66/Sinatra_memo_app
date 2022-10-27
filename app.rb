@@ -25,12 +25,12 @@ get '/new' do
 end
 
 post '/memos' do
-  next_memo_id = 0
-  unless memos.nil?
-    memos['memos'].each do |memo|
+  # next_memo_id = 0
+  # unless memos.nil?
+    # memos['memos'].each do |memo|
       next_memo_id = SecureRandom.uuid
-    end
-  end
+    # end
+  # end
 
   File.open('memos.json', 'w') do |file|
     memos['memos'] << { next_memo_id.to_s => { 'title' => params[:title], 'content' => params[:content] } }
