@@ -26,9 +26,9 @@ end
 
 post '/memos' do
   next_memo_id = SecureRandom.uuid
+  memos[next_memo_id] = {'title'=> params[:title], 'content' => params[:content]}
 
   File.open('memos.json', 'w') do |file|
-    memos['memos'] << { next_memo_id => { 'title' => params[:title], 'content' => params[:content] } }
     JSON.dump(memos, file)
   end
 
@@ -37,11 +37,9 @@ end
 
 get '/memos/:id' do
   @memo_id = params[:id]
-  memos['memos'].each do |memo|
-    if memo[@memo_id]
-      @memo_title = memo[@memo_id]['title']
-      @memo_content = memo[@memo_id]['content']
-    end
+  if memos[@memo_id]
+    @memo_title = memos[@memo_id]['title']
+    @memo_content = memos[@memo_id]['content']
   end
 
   erb :detail
@@ -49,11 +47,9 @@ end
 
 get '/memos/:id/edit' do
   @memo_id = params[:id]
-  memos['memos'].each do |memo|
-    if memo[@memo_id]
-      @memo_title = memo[@memo_id]['title']
-      @memo_content = memo[@memo_id]['content']
-    end
+  if memos[@memo_id]
+    @memo_title = memos[@memo_id]['title']
+    @memo_content = memos[@memo_id]['content']
   end
 
   erb :edit
@@ -62,11 +58,9 @@ end
 patch '/memos/:id/update' do
   @memo_id = params[:id]
   File.open('memos.json', 'w') do |file|
-    memos['memos'].each do |memo|
-      if memo[@memo_id]
-        memo[@memo_id]['title'] = params[:title]
-        memo[@memo_id]['content'] = params[:content]
-      end
+    if memos[@memo_id]
+      memos[@memo_id]['title'] = params[:title]
+      memos[@memo_id]['content'] = params[:content]
     end
     JSON.dump(memos, file)
   end
@@ -76,9 +70,7 @@ end
 
 delete '/memos/:id' do
   @memo_id = params[:id]
-  memos['memos'].delete_if do |memo|
-    memo[@memo_id]
-  end
+  memos.delete(@memo_id)
 
   File.open('memos.json', 'w') do |file|
     JSON.dump(memos, file)
