@@ -55,7 +55,7 @@ get '/memos/:id/edit' do
   erb :edit
 end
 
-patch '/memos/:id/update' do
+patch '/memos/:id' do
   @memo_id = params[:id]
   File.open('memos.json', 'w') do |file|
     if memos[@memo_id]

@@ -1,7 +1,7 @@
 <h1>メモ編集</h1>
 
 <div class="content">
-  <form method="post" action="/memos/<%= @memo_id %>/update">
+  <form method="post" action="/memos/<%= @memo_id %>">
     <p><label>タイトル</label></p>
     <input required type="text" name="title" autocomplete="none" value="<%= sanitize @memo_title %>">
 
