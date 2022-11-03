@@ -26,7 +26,7 @@ end
 
 post '/memos' do
   next_memo_id = SecureRandom.uuid
-  memos[next_memo_id] = {'title'=> params[:title], 'content' => params[:content]}
+  memos[next_memo_id] = { 'title' => params[:title], 'content' => params[:content] }
 
   File.open('memos.json', 'w') do |file|
     JSON.dump(memos, file)
