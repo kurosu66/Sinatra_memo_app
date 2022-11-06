@@ -4,6 +4,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
 require 'securerandom'
+require 'pg'
 
 helpers do
   def sanitize(text)
@@ -11,12 +12,10 @@ helpers do
   end
 end
 
-memos = File.open('memos.json') do |memo|
-  JSON.parse(memo.read)
-end
+conn = PG.connect( dbname: 'memo_app' )
 
 get '/memos' do
-  @memos = memos
+  @conn = conn
   erb :memos
 end
 
@@ -25,21 +24,17 @@ get '/new' do
 end
 
 post '/memos' do
-  next_memo_id = SecureRandom.uuid
-  memos[next_memo_id] = { 'title' => params[:title], 'content' => params[:content] }
-
-  File.open('memos.json', 'w') do |file|
-    JSON.dump(memos, file)
-  end
-
+  conn.exec("INSERT INTO memos (title,content) VALUES ('#{params[:title]}','#{params[:content]}')")
   redirect '/memos'
 end
 
 get '/memos/:id' do
   @memo_id = params[:id]
-  if memos[@memo_id]
-    @memo_title = memos[@memo_id]['title']
-    @memo_content = memos[@memo_id]['content']
+  conn.exec("SELECT * FROM memos where id = #{params[:id]}") do |result|
+    result.each do |row|
+      @memo_title = row["title"]
+      @memo_content = row["content"]
+    end
   end
 
   erb :detail
@@ -47,34 +42,22 @@ end
 
 get '/memos/:id/edit' do
   @memo_id = params[:id]
-  if memos[@memo_id]
-    @memo_title = memos[@memo_id]['title']
-    @memo_content = memos[@memo_id]['content']
+  conn.exec("SELECT * FROM memos where id = #{params[:id]}") do |result|
+    result.each do |row|
+      @memo_title = row["title"]
+      @memo_content = row["content"]
+    end
   end
 
   erb :edit
 end
 
 patch '/memos/:id' do
-  @memo_id = params[:id]
-  File.open('memos.json', 'w') do |file|
-    if memos[@memo_id]
-      memos[@memo_id]['title'] = params[:title]
-      memos[@memo_id]['content'] = params[:content]
-    end
-    JSON.dump(memos, file)
-  end
-
+  conn.exec("UPDATE memos SET title = '#{params[:title]}', content = '#{params[:content]}' WHERE id = #{params[:id]}")
   redirect '/memos'
 end
 
 delete '/memos/:id' do
-  @memo_id = params[:id]
-  memos.delete(@memo_id)
-
-  File.open('memos.json', 'w') do |file|
-    JSON.dump(memos, file)
-  end
-
+  conn.exec("delete from memos WHERE id = #{params[:id]}")
   redirect '/memos'
 end
