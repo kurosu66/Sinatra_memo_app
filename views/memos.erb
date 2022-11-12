@@ -6,7 +6,7 @@
   </div>
 
 <ul>
-  <% @conn.exec("SELECT id,title FROM memos") do |result| %>
+  <% @conn.exec("SELECT id,title FROM memos order by id") do |result| %>
     <% result.each do |row| %>
       <a href="memos/<%= row["id"] %>"><li><%= sanitize row["title"] %></li></a>
     <% end %>

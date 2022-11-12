@@ -10,7 +10,7 @@ helpers do
   end
 end
 
-conn = PG.connect( dbname: 'memo_app' )
+conn = PG.connect(dbname: 'memo_app')
 
 get '/memos' do
   @conn = conn
@@ -23,45 +23,45 @@ end
 
 post '/memos' do
   conn.exec_params(
-    %q{INSERT INTO memos (title, content) VALUES ($1, $2)},
-    ["#{params[:title]}", "#{params[:content]}"]
+    'INSERT INTO memos (title, content) VALUES ($1, $2)',
+    [params[:title].to_s, params[:content].to_s]
   )
   redirect '/memos'
 end
 
 get '/memos/:id' do
   @memo_id = params[:id]
-  sql = %q{SELECT * FROM memos WHERE id = ($1)}
-  conn.exec_params(sql,[params[:id]]) do |result|
+  sql = 'SELECT * FROM memos WHERE id = ($1)'
+  conn.exec_params(sql, [params[:id]]) do |result|
     result.each do |row|
-      @memo_title = row["title"]
-      @memo_content = row["content"]
-    end 
+      @memo_title = row['title']
+      @memo_content = row['content']
+    end
   end
   erb :detail
 end
 
 get '/memos/:id/edit' do
   @memo_id = params[:id]
-  sql = %q{SELECT * FROM memos WHERE id = ($1)}
-  conn.exec_params(sql,[params[:id]]) do |result|
+  sql = 'SELECT * FROM memos WHERE id = ($1)'
+  conn.exec_params(sql, [params[:id]]) do |result|
     result.each do |row|
-      @memo_title = row["title"]
-      @memo_content = row["content"]
-    end 
+      @memo_title = row['title']
+      @memo_content = row['content']
+    end
   end
 
   erb :edit
 end
 
 patch '/memos/:id' do
-  sql = %q{UPDATE memos SET title = ($1), content = ($2) WHERE id = ($3)}
-  conn.exec_params(sql,[params[:title], params[:content], params[:id]])
+  sql = 'UPDATE memos SET title = ($1), content = ($2) WHERE id = ($3)'
+  conn.exec_params(sql, [params[:title], params[:content], params[:id]])
   redirect '/memos'
 end
 
 delete '/memos/:id' do
-  sql = %q{delete from memos WHERE id = ($1)}
+  sql = 'delete from memos WHERE id = ($1)'
   conn.exec_params(sql, [params[:id]])
   redirect '/memos'
 end
