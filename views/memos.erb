@@ -6,10 +6,9 @@
   </div>
 
 <ul>
-  <% unless @memos.nil? %>
-    <% @memos.each do |memo| %>
-      <% memo_id = memo[0] %>
-      <li><a href="memos/<%= memo_id %>"><%= sanitize memo[1]["title"] %></li>
+  <% @conn.exec("SELECT id,title FROM memos order by id") do |result| %>
+    <% result.each do |row| %>
+      <a href="memos/<%= row["id"] %>"><li><%= sanitize row["title"] %></li></a>
     <% end %>
   <% end %>
 </ul>
